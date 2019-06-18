@@ -1,0 +1,9 @@
+This is just my own prototyping/thoughts for numpy dtypes, as of now
+(unlikely that i keep this updated), supports very basic casting,
+dtype discovery and ufunc dispatching.
+
+Some unit support is started on, there are still a lot of open
+questions and this is likely simply not quite the right approach.
+Some of the things could be solved also with a registration
+approach, since it means we only need to try one function (direction),
+but this may be a bit simpler?
