@@ -2,7 +2,7 @@ import numpy as np
 
 from .dtypes import (
         DType, BasicNumericDType, UnitDType, dtype_is_finalized,
-        discover_dtype, promote_types, get_cast_func)
+        discover_dtype, promote_types, get_cast_func, dtype as asdtype)
 
 
 __all__ = ["array", "discover_arr_dtype"]
@@ -34,6 +34,7 @@ class array:
         return f"{repr(self.arr)}\n    -- {self.dtype}"
 
     def astype(self, dtype, casting="unsafe", copy=True):
+        dtype = asdtype(dtype)
         new_dtype, func = get_cast_func(self.dtype, dtype, casting)
 
         new_ndarray = func(self.arr)

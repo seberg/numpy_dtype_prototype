@@ -90,6 +90,12 @@ def get_cast_func(from_dtype, to_dtype, casting="safe"):
 
 
 def promote_types(dtype1, dtype2):
+    """Find the common type of the two datatypes.
+
+    It is possible that the order in which we check dtypes should
+    be according to type hierarchy, although I do not expect
+    subclassing to be common?
+    """
     # common type may be a better name, but this is the current one.
     _assert_dtypes(dtype1, dtype2)
 

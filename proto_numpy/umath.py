@@ -50,7 +50,9 @@ class UFunc:
         if specified_dtypes is not None:
             raise NotImplementedError("need to implement specific dtypes!")
 
+        print(dtypes)
         categories = tuple(None if dt is None else dt._dispatch_category for dt in dtypes)
+        print(categories)
 
         for cats, resolver in self._loops.items():
             # just find first match (for now)
@@ -61,7 +63,7 @@ class UFunc:
             else:
                 return resolver(dtypes)
 
-        raise TypeError(f"no matching loop found for {categories}.")
+        raise TypeError(f"no matching loop found for {tuple(dtypes)}.")
 
     def __call__(self, arr1, arr2, out=None):
         arrs = [arr1, arr2, out]
@@ -140,5 +142,5 @@ def add_unit_resolver(dtypes):
     base_dts = [None if dt is None else dt._base for dt in dtypes]
 
     dtypes, ufunc_impl = add.resolve_loop(base_dts)
-    dtypes = [_dtypes.UnitDType(dt._np_dtype, unit) for dt in dtypes]
+    dtypes = [_dtypes.UnitDType(dt, unit) for dt in dtypes]
     return dtypes, ufunc_impl
