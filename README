@@ -7,3 +7,6 @@ questions and this is likely simply not quite the right approach.
 Some of the things could be solved also with a registration
 approach, since it means we only need to try one function (direction),
 but this may be a bit simpler?
+
+The `examples.ipynb`, shows an example of this in action although from
+a user side.
