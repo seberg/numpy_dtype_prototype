@@ -282,7 +282,7 @@ class BasicNumericDType(DType):
 
     def casting__get_cast_func_to(self, other, casting="safe"):
         # Would be easy to provide a fast slot for this one.
-        if not isinstance(other, BasicNumericDType):
+        if not type(other) is BasicNumericDType:
             return NotImplemented
 
         if np.can_cast(other._np_dtype, self._np_dtype, casting=casting):
@@ -291,16 +291,15 @@ class BasicNumericDType(DType):
             return False
 
     def casting__common_type(self, other):
-        if not isinstance(other, BasicNumericDType):
+        if not type(other) is BasicNumericDType:
             return NotImplemented
 
         return BasicNumericDType(np.promote_types(self._np_dtype, other._np_dtype))
 
 
-class PyFloatDescriptor(DType):
+class PyFloatDescriptor(BasicNumericDType):
     # UFuncs dispatch this the same as a BasicNumericDtype...
     # is this too ugly?! Does some subclassing structure make sense?!
-    _dispatch_category = BasicNumericDType
     _discover_pytypes = {float}
 
     def __init__(self, value):
@@ -322,11 +321,11 @@ class PyFloatDescriptor(DType):
         return self._default
 
     def casting__common_type(self, other):
-        if isinstance(other, PyFloatDescriptor):
+        if type(other) is PyFloatDescriptor:
             abs_value = max(self._abs_value, other._abs_value)
             new = PyFloatDescriptor(abs_value)
             return new
-        elif isinstance(other, PyIntDescriptor):
+        elif type(other) is PyIntDescriptor:
             # ignore value of it for now :).
             return self
 
@@ -337,10 +336,9 @@ class PyFloatDescriptor(DType):
         return cls(pyvalue)
 
 
-class PyIntDescriptor(DType):
+class PyIntDescriptor(BasicNumericDType):
     # UFuncs dispatch this the same as a BasicNumericDtype...
     # is this too ugly?! Does some subclassing structure make sense?!
-    _dispatch_category = BasicNumericDType
     _discover_pytypes = {int, numbers.Integral}  # May hardcode PyInt...
 
     def __init__(self, value, max_value=None):
@@ -370,7 +368,7 @@ class PyIntDescriptor(DType):
             self._default = BasicNumericDType(np.uint64)
 
     def __repr__(self):
-        return f"PyIntDescriptor({self._min_value}, {self._max_value})"
+        return f"PyIntDescriptor(min={self._min_value}, max={self._max_value})"
 
     def __iter_types(self):
         # Iterate through all plausible types as a fallback,
@@ -406,7 +404,7 @@ class PyIntDescriptor(DType):
         return self._default
 
     def casting__common_type(self, other):
-        if isinstance(other, PyIntDescriptor):
+        if type(other) is PyIntDescriptor:
             min_value = min(self._min_value, other._min_value)
             max_value = max(self._max_value, other._max_value)
             new = PyIntDescriptor(min_value, max_value)
@@ -421,7 +419,7 @@ class PyIntDescriptor(DType):
         #       This would also work if we define `can_cast_to` but that
         #       makes casting slow, since user types should specialize it
         #       normally?
-        elif isinstance(other, BasicNumericDType):
+        elif type(other) is BasicNumericDType:
             for np_dtype, dtype in self.__iter_types():
                 # Check other dtype:
                 if not can_cast(other, dtype, casting="safe"):
@@ -456,13 +454,13 @@ class UnitDType(DType):
         return f"UnitDType({self._base._np_dtype}, '{self._unit}')"
 
     def casting__get_cast_func_to(self, other, casting="safe"):
-        if isinstance(other, UnitDType):
+        if type(other) is UnitDType:
             if other._unit != self._unit:
                 return False
             else:
                 res = self._base.casting__get_cast_func_to(other._base, casting)
 
-        elif isinstance(other, BasicNumericDType):
+        elif type(other) is BasicNumericDType:
             if casting != "unsafe":
                 return False
             res = self._base.casting__get_cast_func_to(other, casting)
@@ -476,7 +474,7 @@ class UnitDType(DType):
         return new_dtype, res[1]
 
     def casting__get_cast_func_from(self, other, casting="safe"):
-        if not isinstance(other, BasicNumericDType):
+        if not type(other) is BasicNumericDType:
             return NotImplemented  # UnitDtype is caught in can_cast_to.
 
         if casting != "unsafe":
@@ -486,9 +484,9 @@ class UnitDType(DType):
             return get_cast_func(self._base, other, casting)
 
     def casting__common_type(self, other):
-        if isinstance(other, BasicNumericDType):
+        if type(other) is BasicNumericDType:
             pass
-        elif isinstance(other, UnitDType):
+        elif type(other) is UnitDType:
             if other._unit != self._unit:
                 raise TypeError("can only find common type for identical units.")
 

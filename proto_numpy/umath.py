@@ -50,9 +50,7 @@ class UFunc:
         if specified_dtypes is not None:
             raise NotImplementedError("need to implement specific dtypes!")
 
-        print(dtypes)
         categories = tuple(None if dt is None else dt._dispatch_category for dt in dtypes)
-        print(categories)
 
         for cats, resolver in self._loops.items():
             # just find first match (for now)
